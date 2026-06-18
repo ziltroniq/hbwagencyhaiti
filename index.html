@@ -2,67 +2,78 @@
 <html lang="fr" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="HBW Task - Plateforme professionnelle de micro-tâches rémunérées en HTG">
-    <meta name="theme-color" content="#2563eb">
-    <title>HBW Task | Professional Task Management</title>
-
-    <!-- Preconnect -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HBW Task - Plateforme de micro-tâches rémunérées">
+    <title>HBW Task - Plateforme de micro-tâches</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+    
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
-
-    <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
 </head>
 <body class="page-login-active">
 
-    <!-- ============================================================ -->
-    <!-- SPLASH SCREEN                                                  -->
-    <!-- ============================================================ -->
+    <!-- Splash Screen -->
     <div id="hbw-splash" class="hbw-splash">
         <div class="hbw-splash__content">
             <div class="hbw-splash__logo">
-                <div class="hbw-splash__logo-icon"><i class="fas fa-tasks"></i></div>
+                <div class="hbw-splash__logo-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
                 <h1 class="hbw-splash__title">HBW Task</h1>
                 <p class="hbw-splash__subtitle">Plateforme de micro-tâches rémunérées</p>
             </div>
-            <div class="hbw-splash__loader"><div class="hbw-splash__loader-bar"></div></div>
+            <div class="hbw-splash__loader">
+                <div class="hbw-splash__loader-bar"></div>
+            </div>
             <p class="hbw-splash__loading-text">Chargement en cours…</p>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- APPLICATION SHELL                                              -->
-    <!-- ============================================================ -->
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- App Shell -->
     <div id="app" style="display: none;">
-
-        <!-- Sidebar Mobile Overlay -->
-        <div id="hbw-sidebar-overlay" style="display: none;"></div>
-
+        
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="hbw-sidebar-overlay"></div>
+        
         <!-- Sidebar Mobile Drawer -->
-        <div id="hbw-sidebar-drawer" style="display: none;"></div>
+        <div id="hbw-sidebar-drawer"></div>
 
         <!-- Sidebar Desktop -->
-        <nav id="sidebar" class="sidebar" data-sidebar>
+        <nav class="sidebar" data-sidebar>
             <div class="sidebar__header">
                 <div class="sidebar__logo">
-                    <div class="sidebar__logo-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="sidebar__logo-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
                     <span class="sidebar__logo-text">HBW Task</span>
                 </div>
-                <button class="sidebar__close-mobile" id="btn-close-sidebar-mobile" aria-label="Fermer le menu">
+                <button class="sidebar__close-mobile" id="btn-close-sidebar-mobile" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-
+            
             <div class="sidebar__user-info">
-                <div class="sidebar__avatar" data-user-avatar><i class="fas fa-user"></i></div>
+                <div class="sidebar__avatar" data-user-avatar>
+                    <i class="fas fa-user"></i>
+                </div>
                 <div class="sidebar__user-details">
                     <span class="sidebar__user-name" data-user-name>Utilisateur</span>
                     <span class="sidebar__user-role" data-user-role>—</span>
@@ -71,17 +82,17 @@
                     <i class="fas fa-crown"></i>
                 </span>
             </div>
-
+            
             <div class="sidebar__nav" id="sidebar-nav">
-                <!-- Liens injectés dynamiquement par buildSidebar() -->
+                <!-- Navigation items injected by JS -->
             </div>
-
+            
             <div class="sidebar__footer">
                 <div class="sidebar__balance">
                     <span class="sidebar__balance-label">Solde disponible</span>
                     <span class="sidebar__balance-value" data-user-balance>0 HTG</span>
                 </div>
-                <button class="sidebar__logout-btn" data-action="logout">
+                <button class="sidebar__logout-btn" onclick="handleLogout()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Déconnexion</span>
                 </button>
@@ -89,39 +100,41 @@
         </nav>
 
         <!-- Main Content -->
-        <main id="main-content" class="main-content">
-
+        <main class="main-content">
+            
             <!-- Topbar -->
-            <header id="topbar" class="topbar">
+            <header class="topbar">
                 <div class="topbar__left">
-                    <button id="btn-toggle-sidebar" class="btn-icon" aria-label="Menu">
+                    <button class="btn-icon" id="btn-toggle-sidebar" aria-label="Menu">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="topbar__title-group">
-                        <h2 id="page-title" class="page-title" data-page-title>Tableau de bord</h2>
-                        <p id="page-subtitle" class="page-subtitle" data-page-subtitle>Vue d'ensemble</p>
+                        <h1 class="page-title" data-page-title>Tableau de bord</h1>
+                        <p class="page-subtitle" data-page-subtitle>Vue d'ensemble de votre activité</p>
                     </div>
                 </div>
-
+                
                 <div class="topbar__right">
                     <!-- Notifications -->
-                    <div class="notification-bell" id="notif-bell">
-                        <button class="btn-icon hbw-bell-btn" data-action="toggle-notif-dropdown" aria-label="Notifications">
+                    <div class="notification-bell">
+                        <button class="btn-icon hbw-bell-btn" onclick="toggleNotifDropdown(this)" aria-label="Notifications">
                             <i class="fas fa-bell"></i>
-                            <span id="notif-badge" class="badge hbw-bell-badge" style="display: none;">0</span>
+                            <span id="notif-badge" class="hbw-bell-badge" style="display: none;">0</span>
                         </button>
                         <div id="notif-dropdown" class="dropdown hidden" style="display: none;"></div>
                     </div>
-
+                    
                     <!-- Theme Toggle -->
-                    <button id="btn-theme-toggle" class="btn-icon" data-action="toggle-theme" aria-label="Changer le thème">
+                    <button class="btn-icon" id="btn-theme-toggle" onclick="toggleTheme()" aria-label="Changer le thème">
                         <i class="fas fa-moon"></i>
                     </button>
-
+                    
                     <!-- User Menu -->
-                    <div class="topbar__user-menu" id="topbar-user-menu">
-                        <button class="topbar__user-btn" data-action="toggle-user-menu" aria-label="Menu utilisateur">
-                            <div class="topbar__user-avatar" data-user-avatar><i class="fas fa-user"></i></div>
+                    <div class="topbar__user-menu">
+                        <button class="topbar__user-btn" onclick="toggleUserMenu()" aria-label="Menu utilisateur">
+                            <div class="topbar__user-avatar" data-user-avatar>
+                                <i class="fas fa-user"></i>
+                            </div>
                         </button>
                         <div id="user-dropdown" class="dropdown hidden" style="display: none;">
                             <div class="dropdown__header">
@@ -129,18 +142,22 @@
                                 <span class="dropdown__user-email" data-user-email>—</span>
                             </div>
                             <div class="dropdown__separator"></div>
-                            <a href="#" class="dropdown__item" data-action="navigate" data-page="page-profile">
-                                <i class="fas fa-user-circle"></i><span>Mon profil</span>
+                            <a href="#" class="dropdown__item" onclick="navigateTo('page-profile'); return false;">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Mon profil</span>
                             </a>
-                            <a href="#" class="dropdown__item" data-action="navigate" data-page="page-wallet">
-                                <i class="fas fa-wallet"></i><span>Portefeuille</span>
+                            <a href="#" class="dropdown__item" onclick="navigateTo('page-wallet'); return false;">
+                                <i class="fas fa-wallet"></i>
+                                <span>Portefeuille</span>
                             </a>
-                            <a href="#" class="dropdown__item" data-action="navigate" data-page="page-premium">
-                                <i class="fas fa-crown"></i><span>Premium</span>
+                            <a href="#" class="dropdown__item" onclick="navigateTo('page-premium'); return false;">
+                                <i class="fas fa-crown"></i>
+                                <span>Premium</span>
                             </a>
                             <div class="dropdown__separator"></div>
-                            <a href="#" class="dropdown__item dropdown__item--danger" data-action="logout">
-                                <i class="fas fa-sign-out-alt"></i><span>Déconnexion</span>
+                            <a href="#" class="dropdown__item dropdown__item--danger" onclick="handleLogout(); return false;">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Déconnexion</span>
                             </a>
                         </div>
                     </div>
@@ -148,226 +165,268 @@
             </header>
 
             <!-- Welcome Banner -->
-            <div id="welcome-banner" class="welcome-banner hidden">
+            <div class="welcome-banner hidden" id="welcome-banner">
                 <div class="welcome-banner__content">
                     <h3 class="welcome-banner__greeting" data-welcome-message>Bienvenue !</h3>
                     <p class="welcome-banner__sub">Voici un résumé de votre activité aujourd'hui.</p>
                 </div>
                 <div class="welcome-banner__actions">
-                    <button class="btn btn-primary btn-sm" data-action="navigate" data-page="page-worker-dashboard">
+                    <button class="btn btn-primary btn-sm" onclick="navigateTo('page-worker-dashboard')">
                         <i class="fas fa-play-circle"></i> Commencer
                     </button>
                 </div>
             </div>
 
             <!-- Pages Container -->
-            <div id="page-container" class="page-container">
-
+            <div class="page-container">
+                
                 <!-- PAGE 1: LOGIN -->
                 <section id="page-login" class="page page-login active">
-                    <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-white">
-                        <div class="w-full max-w-md">
-                            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-                                <div class="text-center mb-8">
-                                    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-tasks text-white text-3xl"></i>
-                                    </div>
-                                    <h1 class="text-2xl font-bold text-gray-900">HBW Task</h1>
-                                    <p class="text-sm text-gray-500 mt-1">Connectez-vous à votre compte</p>
-                                </div>
-                                <form id="login-form" class="space-y-5" novalidate>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2" for="login-username">Nom d'utilisateur ou email</label>
-                                        <input type="text" id="login-username" placeholder="Votre identifiant"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                            autocomplete="username" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2" for="login-password">Mot de passe</label>
-                                        <div class="relative">
-                                            <input type="password" id="login-password" placeholder="Votre mot de passe"
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition pr-12"
-                                                autocomplete="current-password" required>
-                                            <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                                data-action="toggle-password" data-target="login-password" aria-label="Afficher le mot de passe">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <button type="submit" id="login-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
-                                        <span class="btn-text"><i class="fas fa-sign-in-alt mr-2"></i>Se connecter</span>
-                                        <span class="btn-loader hidden"><i class="fas fa-spinner fa-spin mr-2"></i>Connexion...</span>
-                                    </button>
-                                </form>
+                    <div class="login-card">
+                        <div class="login-card__header">
+                            <div class="login-card__logo">
+                                <i class="fas fa-tasks"></i>
                             </div>
+                            <h1 class="login-card__title">HBW Task</h1>
+                            <p class="login-card__subtitle">Connectez-vous à votre compte</p>
                         </div>
+                        
+                        <form id="login-form" class="login-card__form" novalidate>
+                            <div class="form-group">
+                                <label for="login-username" class="form-label">Nom d'utilisateur</label>
+                                <input type="text" id="login-username" class="form-input" placeholder="Entrez votre nom d'utilisateur" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="login-password" class="form-label">Mot de passe</label>
+                                <div class="form-input-icon">
+                                    <input type="password" id="login-password" class="form-input" placeholder="Entrez votre mot de passe" required>
+                                    <button type="button" class="form-input-icon__toggle" onclick="togglePassword('login-password', this)" aria-label="Afficher le mot de passe">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                            </button>
+                        </form>
                     </div>
                 </section>
 
                 <!-- PAGE 2: ADMIN DASHBOARD -->
                 <section id="page-admin-dashboard" class="page hidden">
                     <div class="page__inner" id="admin-main-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du tableau de bord administrateur…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du tableau de bord administrateur…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 3: USERS MANAGEMENT -->
                 <section id="page-users-management" class="page hidden">
                     <div class="page__inner" id="users-management-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement de la gestion des utilisateurs…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement de la gestion des utilisateurs…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 4: TEAMS MANAGEMENT -->
                 <section id="page-teams-management" class="page hidden">
                     <div class="page__inner" id="teams-management-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement de la gestion des équipes…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement de la gestion des équipes…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 5: TASKS MANAGEMENT -->
                 <section id="page-tasks-management" class="page hidden">
                     <div class="page__inner" id="tasks-management-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement de la gestion des tâches…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement de la gestion des tâches…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 6: VALIDATION -->
                 <section id="page-validation" class="page hidden">
                     <div class="page__inner" id="validation-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des validations…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des validations…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 7: PAYMENTS -->
                 <section id="page-payments" class="page hidden">
                     <div class="page__inner" id="payments-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des paiements…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des paiements…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 8: SETTINGS -->
                 <section id="page-settings" class="page hidden">
                     <div class="page__inner" id="settings-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des paramètres…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des paramètres…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 9: MANAGER DASHBOARD -->
                 <section id="page-manager-dashboard" class="page hidden">
                     <div class="page__inner" id="manager-dashboard-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du tableau de bord manager…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du tableau de bord manager…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 10: WORKER DASHBOARD -->
                 <section id="page-worker-dashboard" class="page hidden">
                     <div class="page__inner" id="worker-dashboard-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du tableau de bord worker…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du tableau de bord worker…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 11: OFFERWALL MONLIX -->
                 <section id="page-offerwall-monlix" class="page hidden">
                     <div class="page__inner" id="offerwall-monlix-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des offres Monlix…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des offres Monlix…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 12: OFFERWALL ADSCEND -->
                 <section id="page-offerwall-adscend" class="page hidden">
                     <div class="page__inner" id="offerwall-adscend-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des offres Adscend…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des offres Adscend…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 13: OFFERWALL AYETSTUDIOS -->
                 <section id="page-offerwall-ayetstudios" class="page hidden">
                     <div class="page__inner" id="offerwall-ayetstudios-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des offres AyetStudios…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des offres AyetStudios…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 14: OFFERWALL LOOTABLY -->
                 <section id="page-offerwall-lootably" class="page hidden">
                     <div class="page__inner" id="offerwall-lootably-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des offres Lootably…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des offres Lootably…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 15: AGENCY TASKS -->
                 <section id="page-agency-tasks" class="page hidden">
                     <div class="page__inner" id="agency-tasks-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des tâches agency…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des tâches agency…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 16: WALLET -->
                 <section id="page-wallet" class="page hidden">
                     <div class="page__inner" id="wallet-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du portefeuille…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du portefeuille…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 17: PROFILE -->
                 <section id="page-profile" class="page hidden">
                     <div class="page__inner" id="profile-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du profil…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du profil…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 18: PREMIUM -->
                 <section id="page-premium" class="page hidden">
                     <div class="page__inner" id="premium-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement des offres premium…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des offres premium…</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- PAGE 19: LEADERBOARD -->
                 <section id="page-leaderboard" class="page hidden">
                     <div class="page__inner" id="leaderboard-content">
-                        <div class="page__loading"><div class="spinner"></div><p>Chargement du classement…</p></div>
+                        <div class="page__loading">
+                            <div class="spinner"></div>
+                            <p>Chargement du classement…</p>
+                        </div>
                     </div>
                 </section>
 
-            </div><!-- /page-container -->
+            </div>
         </main>
 
         <!-- Bottom Bar (Mobile) -->
-        <nav id="bottom-bar" class="bottom-bar hidden">
+        <nav class="bottom-bar hidden" id="bottom-bar">
             <div class="bottom-bar__inner" id="bottom-bar-inner">
-                <!-- Boutons injectés dynamiquement par buildBottomBar() -->
+                <!-- Bottom bar items injected by JS -->
             </div>
         </nav>
+        
+    </div>
 
-        <!-- Upload Progress Overlay -->
-        <div id="hbw-upload-overlay" class="hbw-upload-overlay hidden">
-            <div class="hbw-upload-modal">
-                <div class="hbw-upload-modal__header">
-                    <h4 class="hbw-upload-modal__title">Envoi en cours…</h4>
-                    <span class="hbw-upload-modal__percent" id="hbw-progress-percent">0%</span>
-                </div>
-                <div class="hbw-upload-modal__body">
-                    <div class="hbw-upload-modal__status" id="hbw-progress-status">Préparation du fichier…</div>
-                    <div class="hbw-upload-modal__progress-track">
-                        <div class="hbw-upload-modal__progress-fill" id="hbw-progress-bar-inner" style="width: 0%;"></div>
-                    </div>
-                </div>
-                <div class="hbw-upload-modal__footer">
-                    <button class="btn btn-sm btn-outline" data-action="cancel-upload">Annuler</button>
+    <!-- Upload Progress Overlay -->
+    <div id="hbw-upload-overlay" class="hbw-upload-overlay hidden">
+        <div class="hbw-upload-modal">
+            <div class="hbw-upload-modal__header">
+                <h4 class="hbw-upload-modal__title">Envoi en cours…</h4>
+                <span class="hbw-upload-modal__percent" id="hbw-progress-percent">0%</span>
+            </div>
+            <div class="hbw-upload-modal__body">
+                <div class="hbw-upload-modal__status" id="hbw-progress-status">Préparation du fichier…</div>
+                <div class="hbw-upload-modal__progress-track">
+                    <div class="hbw-upload-modal__progress-fill" id="hbw-progress-bar-inner" style="width: 0%;"></div>
                 </div>
             </div>
+            <div class="hbw-upload-modal__footer">
+                <button class="btn btn-sm btn-outline" onclick="cancelUpload()">Annuler</button>
+            </div>
         </div>
-
-    </div><!-- /app -->
-
-    <!-- ============================================================ -->
-    <!-- TOAST CONTAINER (hors #app)                                    -->
-    <!-- ============================================================ -->
-    <div id="toast-container" class="toast-container"></div>
+    </div>
 
     <!-- ============================================================ -->
-    <!-- GLOBAL MODALS (hors #app)                                      -->
+    <!-- GLOBAL MODALS                                                -->
     <!-- ============================================================ -->
 
     <!-- Confirm Modal -->
@@ -375,7 +434,9 @@
         <div class="modal-box modal-box--sm">
             <div class="modal-box__header">
                 <h3 class="modal-box__title" id="confirm-title">Confirmation</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body">
                 <div class="confirm__icon" id="confirm-icon">
@@ -395,7 +456,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Détail utilisateur</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-user-detail-body"></div>
             <div class="modal-box__footer">
@@ -409,7 +472,9 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Ajuster le solde</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-adjust-balance-body"></div>
             <div class="modal-box__footer">
@@ -424,7 +489,9 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title" id="modal-create-team-title">Créer une équipe</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-create-team-body"></div>
             <div class="modal-box__footer">
@@ -434,12 +501,14 @@
         </div>
     </div>
 
-    <!-- Create Task Modal (avec upload image tutoriel ImgBB) -->
+    <!-- Create Task Modal -->
     <div id="modal-create-task" class="modal-backdrop hidden" data-modal="modal-create-task">
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Créer une tâche</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-create-task-body"></div>
             <div class="modal-box__footer">
@@ -454,7 +523,9 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Ajouter une maintenance</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-add-maintenance-body"></div>
             <div class="modal-box__footer">
@@ -469,7 +540,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Soumettre une preuve</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-task-proof-body">
                 <div class="border-dashed dropzone" id="proof-dropzone">
@@ -488,7 +561,9 @@
             </div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-submit-proof"><i class="fas fa-paper-plane"></i> Soumettre</button>
+                <button class="btn btn-primary" id="btn-submit-proof">
+                    <i class="fas fa-paper-plane"></i> Soumettre
+                </button>
             </div>
         </div>
     </div>
@@ -497,9 +572,11 @@
     <div id="modal-proof-success" class="modal-backdrop hidden" data-modal="modal-proof-success">
         <div class="modal-box modal-box--sm">
             <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon"><i class="fas fa-check-circle text-green-600 text-4xl"></i></div>
+                <div class="modal-box__success-icon">
+                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                </div>
                 <h3 class="text-xl font-bold text-gray-900 mt-4">Preuve soumise !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre preuve a été envoyée avec succès.</p>
+                <p class="text-sm text-gray-500 mt-2">Votre preuve a été envoyée avec succès. Elle sera examinée par un administrateur.</p>
             </div>
             <div class="modal-box__footer justify-center">
                 <button class="btn btn-primary" data-close-modal>Parfait !</button>
@@ -512,7 +589,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Preuve de maintenance</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-maintenance-proof-body">
                 <div class="border-dashed dropzone" id="maintenance-dropzone">
@@ -526,7 +605,9 @@
             </div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-submit-maintenance"><i class="fas fa-paper-plane"></i> Soumettre</button>
+                <button class="btn btn-primary" id="btn-submit-maintenance">
+                    <i class="fas fa-paper-plane"></i> Soumettre
+                </button>
             </div>
         </div>
     </div>
@@ -535,9 +616,11 @@
     <div id="modal-maintenance-success" class="modal-backdrop hidden" data-modal="modal-maintenance-success">
         <div class="modal-box modal-box--sm">
             <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon"><i class="fas fa-check-circle text-green-600 text-4xl"></i></div>
+                <div class="modal-box__success-icon">
+                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                </div>
                 <h3 class="text-xl font-bold text-gray-900 mt-4">Maintenance confirmée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Le bonus sera crédité après vérification.</p>
+                <p class="text-sm text-gray-500 mt-2">Votre preuve a été envoyée. Le bonus sera crédité après vérification.</p>
             </div>
             <div class="modal-box__footer justify-center">
                 <button class="btn btn-primary" data-close-modal>Parfait !</button>
@@ -549,9 +632,11 @@
     <div id="modal-withdrawal-success" class="modal-backdrop hidden" data-modal="modal-withdrawal-success">
         <div class="modal-box modal-box--sm">
             <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon"><i class="fas fa-check-circle text-green-600 text-4xl"></i></div>
+                <div class="modal-box__success-icon">
+                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                </div>
                 <h3 class="text-xl font-bold text-gray-900 mt-4">Demande envoyée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre demande de retrait sera traitée prochainement.</p>
+                <p class="text-sm text-gray-500 mt-2">Votre demande de retrait a été soumise. Elle sera traitée dans les plus brefs délais.</p>
             </div>
             <div class="modal-box__footer justify-center">
                 <button class="btn btn-primary" data-close-modal>Parfait !</button>
@@ -563,9 +648,11 @@
     <div id="modal-premium-submitted" class="modal-backdrop hidden" data-modal="modal-premium-submitted">
         <div class="modal-box modal-box--sm">
             <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon"><i class="fas fa-crown text-yellow-600 text-4xl"></i></div>
+                <div class="modal-box__success-icon">
+                    <i class="fas fa-crown text-yellow-600 text-4xl"></i>
+                </div>
                 <h3 class="text-xl font-bold text-gray-900 mt-4">Preuve premium envoyée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Un administrateur validera votre abonnement.</p>
+                <p class="text-sm text-gray-500 mt-2">Votre demande d'abonnement premium a été soumise. Un administrateur la validera prochainement.</p>
             </div>
             <div class="modal-box__footer justify-center">
                 <button class="btn btn-primary" data-close-modal>Compris !</button>
@@ -578,12 +665,16 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Limites de votre plan</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-plan-limits-body"></div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Fermer</button>
-                <button class="btn btn-primary" data-action="navigate" data-page="page-premium"><i class="fas fa-crown"></i> Passer au Premium</button>
+                <button class="btn btn-primary" onclick="navigateTo('page-premium')">
+                    Passer au Premium
+                </button>
             </div>
         </div>
     </div>
@@ -593,7 +684,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Mes notifications</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-notifications-body"></div>
             <div class="modal-box__footer">
@@ -607,7 +700,9 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Actions sur le membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-member-actions-body"></div>
             <div class="modal-box__footer">
@@ -621,7 +716,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Détail du membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-member-detail-body"></div>
             <div class="modal-box__footer">
@@ -635,12 +732,16 @@
         <div class="modal-box">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Identifiants du membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-member-credentials-body"></div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Fermer</button>
-                <button class="btn btn-primary" id="btn-copy-credentials"><i class="fas fa-copy"></i> Copier</button>
+                <button class="btn btn-primary" id="btn-copy-credentials">
+                    <i class="fas fa-copy"></i> Copier
+                </button>
             </div>
         </div>
     </div>
@@ -650,12 +751,16 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Ajouter un membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-add-member-body"></div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-create-worker"><i class="fas fa-user-plus"></i> Créer le compte</button>
+                <button class="btn btn-primary" id="btn-create-worker">
+                    <i class="fas fa-user-plus"></i> Créer le compte
+                </button>
             </div>
         </div>
     </div>
@@ -665,7 +770,9 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Messages de l'équipe</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-manager-messages-body"></div>
             <div class="modal-box__footer">
@@ -679,12 +786,16 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Demande de retrait</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-manager-withdrawal-body"></div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-request-manager-withdrawal"><i class="fas fa-paper-plane"></i> Demander</button>
+                <button class="btn btn-primary" id="btn-request-manager-withdrawal">
+                    <i class="fas fa-paper-plane"></i> Demander le retrait
+                </button>
             </div>
         </div>
     </div>
@@ -694,12 +805,16 @@
         <div class="modal-box modal-box--lg">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Créer un compte Manager</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body" id="modal-create-manager-body"></div>
             <div class="modal-box__footer">
                 <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-confirm-create-manager"><i class="fas fa-user-plus"></i> Créer</button>
+                <button class="btn btn-primary" id="btn-confirm-create-manager">
+                    <i class="fas fa-user-plus"></i> Créer le compte
+                </button>
             </div>
         </div>
     </div>
@@ -709,7 +824,9 @@
         <div class="modal-box modal-box--fullscreen">
             <div class="modal-box__header">
                 <h3 class="modal-box__title">Aperçu de l'image</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer"><i class="fas fa-times"></i></button>
+                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-box__body text-center" id="image-viewer-body">
                 <img id="image-viewer-src" src="" alt="Aperçu" class="image-viewer__img">
@@ -717,17 +834,8 @@
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- FIREBASE SDK + APP MODULE                                      -->
-    <!-- ============================================================ -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
-
-    <!-- Application Module Entry Point -->
-    <script type="module" src="js/app.js"></script>
-
+    <!-- Application Script -->
+    <script src="app.js"></script>
+    
 </body>
-  </html>
+                                </html>
