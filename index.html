@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,824 +18,1477 @@
     <link rel="stylesheet" href="style.css">
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-<body class="page-login-active">
-
+<body>
     <!-- Splash Screen -->
-    <div id="hbw-splash" class="hbw-splash">
-        <div class="hbw-splash__content">
-            <div class="hbw-splash__logo">
-                <div class="hbw-splash__logo-icon">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <h1 class="hbw-splash__title">HBW Task</h1>
-                <p class="hbw-splash__subtitle">Plateforme de micro-tâches rémunérées</p>
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <i class="fas fa-tasks"></i>
             </div>
-            <div class="hbw-splash__loader">
-                <div class="hbw-splash__loader-bar"></div>
+            <h1 class="splash-title">HBW Task</h1>
+            <p class="splash-subtitle">Plateforme de micro-tâches rémunérées</p>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
             </div>
-            <p class="hbw-splash__loading-text">Chargement en cours…</p>
         </div>
     </div>
 
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- App Shell -->
-    <div id="app" style="display: none;">
-        
-        <!-- Sidebar Overlay (Mobile) -->
-        <div id="hbw-sidebar-overlay"></div>
-        
-        <!-- Sidebar Mobile Drawer -->
-        <div id="hbw-sidebar-drawer"></div>
-
-        <!-- Sidebar Desktop -->
-        <nav class="sidebar" data-sidebar>
-            <div class="sidebar__header">
-                <div class="sidebar__logo">
-                    <div class="sidebar__logo-icon">
+    <!-- Login Page -->
+    <div id="page-login" class="page-login">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-logo">
                         <i class="fas fa-tasks"></i>
                     </div>
-                    <span class="sidebar__logo-text">HBW Task</span>
+                    <h1>HBW Task</h1>
+                    <p>Connectez-vous à votre compte</p>
                 </div>
-                <button class="sidebar__close-mobile" id="btn-close-sidebar-mobile" aria-label="Fermer">
+                
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Nom d'utilisateur</label>
+                        <input 
+                            type="text" 
+                            id="login-username" 
+                            name="username"
+                            placeholder="Entrez votre nom d'utilisateur"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">Mot de passe</label>
+                        <div class="password-input-wrapper">
+                            <input 
+                                type="password" 
+                                id="login-password" 
+                                name="password"
+                                placeholder="Entrez votre mot de passe"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="password-toggle" aria-label="Afficher le mot de passe">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span class="btn-text">Se connecter</span>
+                        <span class="btn-loader hidden">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p>Plateforme sécurisée • Données chiffrées</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Shell -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-tasks"></i>
+                    <span>HBW Task</span>
+                </div>
+                <button id="sidebar-close" class="sidebar-close" aria-label="Fermer le menu">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             
-            <div class="sidebar__user-info">
-                <div class="sidebar__avatar" data-user-avatar>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">
                     <i class="fas fa-user"></i>
                 </div>
-                <div class="sidebar__user-details">
-                    <span class="sidebar__user-name" data-user-name>Utilisateur</span>
-                    <span class="sidebar__user-role" data-user-role>—</span>
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-name">Utilisateur</span>
+                    <span class="sidebar-user-role">—</span>
                 </div>
-                <span class="sidebar__premium-badge" data-user-premium style="display: none;">
-                    <i class="fas fa-crown"></i>
-                </span>
             </div>
             
-            <div class="sidebar__nav" id="sidebar-nav">
-                <!-- Navigation items injected by JS -->
-            </div>
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <!-- Navigation items will be injected here -->
+            </nav>
             
-            <div class="sidebar__footer">
-                <div class="sidebar__balance">
-                    <span class="sidebar__balance-label">Solde disponible</span>
-                    <span class="sidebar__balance-value" data-user-balance>0 HTG</span>
-                </div>
-                <button class="sidebar__logout-btn" onclick="handleLogout()">
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-outline btn-block">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Déconnexion</span>
                 </button>
             </div>
-        </nav>
+        </aside>
 
         <!-- Main Content -->
         <main class="main-content">
-            
             <!-- Topbar -->
             <header class="topbar">
-                <div class="topbar__left">
-                    <button class="btn-icon" id="btn-toggle-sidebar" aria-label="Menu">
+                <div class="topbar-left">
+                    <button id="sidebar-toggle" class="btn-icon" aria-label="Ouvrir le menu">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <div class="topbar__title-group">
-                        <h1 class="page-title" data-page-title>Tableau de bord</h1>
-                        <p class="page-subtitle" data-page-subtitle>Vue d'ensemble de votre activité</p>
+                    <div class="topbar-title">
+                        <h1 id="page-title">Tableau de bord</h1>
+                        <p id="page-subtitle">Vue d'ensemble de votre activité</p>
                     </div>
                 </div>
                 
-                <div class="topbar__right">
-                    <!-- Notifications -->
-                    <div class="notification-bell">
-                        <button class="btn-icon hbw-bell-btn" onclick="toggleNotifDropdown(this)" aria-label="Notifications">
-                            <i class="fas fa-bell"></i>
-                            <span id="notif-badge" class="hbw-bell-badge" style="display: none;">0</span>
-                        </button>
-                        <div id="notif-dropdown" class="dropdown hidden" style="display: none;"></div>
-                    </div>
-                    
-                    <!-- Theme Toggle -->
-                    <button class="btn-icon" id="btn-theme-toggle" onclick="toggleTheme()" aria-label="Changer le thème">
+                <div class="topbar-right">
+                    <button id="theme-toggle" class="btn-icon" aria-label="Changer le thème">
                         <i class="fas fa-moon"></i>
                     </button>
                     
-                    <!-- User Menu -->
-                    <div class="topbar__user-menu">
-                        <button class="topbar__user-btn" onclick="toggleUserMenu()" aria-label="Menu utilisateur">
-                            <div class="topbar__user-avatar" data-user-avatar>
-                                <i class="fas fa-user"></i>
-                            </div>
+                    <div class="topbar-notifications">
+                        <button id="notif-btn" class="btn-icon" aria-label="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span id="notif-badge" class="notif-badge hidden">0</span>
                         </button>
-                        <div id="user-dropdown" class="dropdown hidden" style="display: none;">
-                            <div class="dropdown__header">
-                                <span class="dropdown__user-name" data-user-name>Utilisateur</span>
-                                <span class="dropdown__user-email" data-user-email>—</span>
+                        <div id="notif-dropdown" class="notif-dropdown hidden">
+                            <div class="notif-header">
+                                <h3>Notifications</h3>
+                                <button id="notif-mark-all" class="btn-text">Tout marquer comme lu</button>
                             </div>
-                            <div class="dropdown__separator"></div>
-                            <a href="#" class="dropdown__item" onclick="navigateTo('page-profile'); return false;">
-                                <i class="fas fa-user-circle"></i>
+                            <div id="notif-list" class="notif-list">
+                                <!-- Notifications will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="topbar-user">
+                        <button id="user-menu-btn" class="btn-icon" aria-label="Menu utilisateur">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <div id="user-dropdown" class="user-dropdown hidden">
+                            <div class="user-dropdown-header">
+                                <span class="user-dropdown-name">Utilisateur</span>
+                                <span class="user-dropdown-email">—</span>
+                            </div>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" data-page="page-profile" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
                                 <span>Mon profil</span>
                             </a>
-                            <a href="#" class="dropdown__item" onclick="navigateTo('page-wallet'); return false;">
+                            <a href="#" data-page="page-wallet" class="user-dropdown-item">
                                 <i class="fas fa-wallet"></i>
                                 <span>Portefeuille</span>
                             </a>
-                            <a href="#" class="dropdown__item" onclick="navigateTo('page-premium'); return false;">
+                            <a href="#" data-page="page-premium" class="user-dropdown-item">
                                 <i class="fas fa-crown"></i>
                                 <span>Premium</span>
                             </a>
-                            <div class="dropdown__separator"></div>
-                            <a href="#" class="dropdown__item dropdown__item--danger" onclick="handleLogout(); return false;">
+                            <div class="user-dropdown-divider"></div>
+                            <button id="user-logout" class="user-dropdown-item user-dropdown-item-danger">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Déconnexion</span>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
             </header>
 
             <!-- Welcome Banner -->
-            <div class="welcome-banner hidden" id="welcome-banner">
-                <div class="welcome-banner__content">
-                    <h3 class="welcome-banner__greeting" data-welcome-message>Bienvenue !</h3>
-                    <p class="welcome-banner__sub">Voici un résumé de votre activité aujourd'hui.</p>
+            <div id="welcome-banner" class="welcome-banner hidden">
+                <div class="welcome-content">
+                    <h2 id="welcome-greeting">Bienvenue !</h2>
+                    <p>Voici un résumé de votre activité aujourd'hui.</p>
                 </div>
-                <div class="welcome-banner__actions">
-                    <button class="btn btn-primary btn-sm" onclick="navigateTo('page-worker-dashboard')">
-                        <i class="fas fa-play-circle"></i> Commencer
-                    </button>
-                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-play"></i>
+                    Commencer
+                </button>
             </div>
 
-            <!-- Pages Container -->
-            <div class="page-container">
-                
-                <!-- PAGE 1: LOGIN -->
-                <section id="page-login" class="page page-login active">
-                    <div class="login-card">
-                        <div class="login-card__header">
-                            <div class="login-card__logo">
-                                <i class="fas fa-tasks"></i>
+            <!-- Page Container -->
+            <div id="page-container" class="page-container">
+                <!-- Admin Dashboard -->
+                <div id="page-admin-dashboard" class="page-content hidden">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-primary">
+                                <i class="fas fa-users"></i>
                             </div>
-                            <h1 class="login-card__title">HBW Task</h1>
-                            <p class="login-card__subtitle">Connectez-vous à votre compte</p>
+                            <div class="stat-info">
+                                <span class="stat-label">Utilisateurs totaux</span>
+                                <span class="stat-value" id="admin-total-users">—</span>
+                            </div>
                         </div>
                         
-                        <form id="login-form" class="login-card__form" novalidate>
-                            <div class="form-group">
-                                <label for="login-username" class="form-label">Nom d'utilisateur</label>
-                                <input type="text" id="login-username" class="form-input" placeholder="Entrez votre nom d'utilisateur" required>
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-success">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Tâches actives</span>
+                                <span class="stat-value" id="admin-active-tasks">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-warning">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Revenus (HTG)</span>
+                                <span class="stat-value" id="admin-total-earnings">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-danger">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">En attente</span>
+                                <span class="stat-value" id="admin-pending-tasks">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-charts">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Revenus (7 derniers jours)</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="admin-earnings-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Statut des tâches</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="admin-tasks-status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Top Workers</h3>
+                            <button class="btn btn-outline btn-sm" data-page="page-users-management">
+                                Voir tout
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="admin-top-workers" class="top-workers-list">
+                                <!-- Top workers will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" data-page="page-tasks-management">
+                            <i class="fas fa-plus"></i>
+                            Créer tâche
+                        </button>
+                        <button class="btn btn-primary" data-page="page-users-management">
+                            <i class="fas fa-user-plus"></i>
+                            Utilisateurs
+                        </button>
+                        <button class="btn btn-primary" data-page="page-validation">
+                            <i class="fas fa-check"></i>
+                            Valider
+                        </button>
+                        <button class="btn btn-primary" data-page="page-settings">
+                            <i class="fas fa-cog"></i>
+                            Paramètres
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Management -->
+                <div id="page-users-management" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Gestion des utilisateurs</h3>
+                            <button class="btn btn-outline btn-sm" id="export-users-btn">
+                                <i class="fas fa-download"></i>
+                                Export CSV
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="filters-bar">
+                                <input 
+                                    type="text" 
+                                    id="users-search" 
+                                    placeholder="Rechercher..."
+                                    class="form-input"
+                                >
+                                <select id="users-role-filter" class="form-select">
+                                    <option value="">Tous les rôles</option>
+                                    <option value="worker">Worker</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <select id="users-status-filter" class="form-select">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="active">Actif</option>
+                                    <option value="suspended">Suspendu</option>
+                                    <option value="banned">Banni</option>
+                                </select>
                             </div>
                             
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Utilisateur</th>
+                                            <th>Rôle</th>
+                                            <th>Statut</th>
+                                            <th>Tâches</th>
+                                            <th>Solde</th>
+                                            <th>Inscrit le</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body">
+                                        <!-- Users will be injected here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teams Management -->
+                <div id="page-teams-management" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Gestion des équipes</h3>
+                            <button class="btn btn-primary" id="create-team-btn">
+                                <i class="fas fa-plus"></i>
+                                Créer équipe
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="teams-grid" class="teams-grid">
+                                <!-- Teams will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Management -->
+                <div id="page-tasks-management" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Gestion des tâches</h3>
+                            <button class="btn btn-primary" id="create-task-btn">
+                                <i class="fas fa-plus"></i>
+                                Créer tâche
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="tabs">
+                                <button class="tab-btn active" data-tab="pending">En attente</button>
+                                <button class="tab-btn" data-tab="active">Actives</button>
+                                <button class="tab-btn" data-tab="completed">Terminées</button>
+                                <button class="tab-btn" data-tab="rejected">Rejetées</button>
+                            </div>
+                            
+                            <div id="tasks-list" class="tasks-list">
+                                <!-- Tasks will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation -->
+                <div id="page-validation" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Validation des preuves</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="validation-list" class="validation-list">
+                                <!-- Proofs will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payments -->
+                <div id="page-payments" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Retraits & Paiements</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Utilisateur</th>
+                                            <th>Montant</th>
+                                            <th>Méthode</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="withdrawals-table-body">
+                                        <!-- Withdrawals will be injected here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div id="page-settings" class="page-content hidden">
+                    <div class="settings-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Paramètres globaux</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Taux de change (USD → HTG)</label>
+                                    <div class="input-with-button">
+                                        <input type="number" id="setting-exchange-rate" class="form-input" step="0.01">
+                                        <button class="btn btn-primary btn-sm" id="save-exchange-rate-btn">Enregistrer</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Frais de maintenance (%)</label>
+                                    <div class="input-with-button">
+                                        <input type="number" id="setting-maintenance-fee" class="form-input" step="0.01">
+                                        <button class="btn btn-primary btn-sm" id="save-maintenance-fee-btn">Enregistrer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Numéros de paiement</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>MonCash</label>
+                                    <input type="text" id="payment-moncash" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>NatCash</label>
+                                    <input type="text" id="payment-natcash" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Banque (IBAN/Compte)</label>
+                                    <input type="text" id="payment-bank" class="form-input">
+                                </div>
+                                <button class="btn btn-primary" id="save-payment-numbers-btn">
+                                    <i class="fas fa-save"></i>
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Prix Premium</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Mensuel (HTG)</label>
+                                    <input type="number" id="premium-monthly" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Annuel (HTG)</label>
+                                    <input type="number" id="premium-yearly" class="form-input">
+                                </div>
+                                <button class="btn btn-primary" id="save-premium-prices-btn">
+                                    <i class="fas fa-save"></i>
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Créer un compte Manager</h3>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" id="create-manager-btn">
+                                    <i class="fas fa-user-plus"></i>
+                                    Créer un manager
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Commissions journalières</h3>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-warning" id="calculate-commissions-btn">
+                                    <i class="fas fa-calculator"></i>
+                                    Calculer les commissions
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manager Dashboard -->
+                <div id="page-manager-dashboard" class="page-content hidden">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Membres actifs</span>
+                                <span class="stat-value" id="mgr-active-members">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-success">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Tâches totales</span>
+                                <span class="stat-value" id="mgr-total-tasks">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-warning">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Gains équipe</span>
+                                <span class="stat-value" id="mgr-team-earnings">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-purple">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Messages</span>
+                                <span class="stat-value" id="mgr-msg-count">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Membres récents</h3>
+                                <button class="btn btn-outline btn-sm" id="view-all-members-btn">Voir tout</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="manager-members-list" class="members-list">
+                                    <!-- Members will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Messages d'équipe</h3>
+                                <button class="btn btn-outline btn-sm" id="manage-messages-btn">Gérer</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="manager-messages-preview" class="messages-preview">
+                                    <!-- Messages will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Performance (7 jours)</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="manager-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" id="add-member-btn">
+                            <i class="fas fa-user-plus"></i>
+                            Ajouter membre
+                        </button>
+                        <button class="btn btn-primary" id="manager-messages-btn">
+                            <i class="fas fa-comments"></i>
+                            Messages
+                        </button>
+                        <button class="btn btn-primary" id="manager-stats-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            Stats
+                        </button>
+                        <button class="btn btn-primary" id="manager-withdrawal-btn">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Retrait
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Worker Dashboard -->
+                <div id="page-worker-dashboard" class="page-content hidden">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-success">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Solde disponible</span>
+                                <span class="stat-value" id="worker-balance">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">En attente</span>
+                                <span class="stat-value" id="worker-pending">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-primary">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Tâches terminées</span>
+                                <span class="stat-value" id="worker-completed">—</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-purple">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Badge actuel</span>
+                                <span class="stat-value" id="worker-badge">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Tâches en cours</h3>
+                                <span class="badge badge-primary" id="worker-active-count">0</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="worker-current-tasks" class="tasks-list">
+                                    <!-- Current tasks will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Tâches disponibles</h3>
+                                <button class="btn btn-outline btn-sm" id="view-all-tasks-btn">Voir tout</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="worker-available-tasks" class="tasks-list">
+                                    <!-- Available tasks will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" id="worker-tasks-btn">
+                            <i class="fas fa-tasks"></i>
+                            Tâches
+                        </button>
+                        <button class="btn btn-primary" id="worker-offers-btn">
+                            <i class="fas fa-gift"></i>
+                            Offres
+                        </button>
+                        <button class="btn btn-primary" id="worker-history-btn">
+                            <i class="fas fa-history"></i>
+                            Historique
+                        </button>
+                        <button class="btn btn-primary" id="worker-withdrawal-btn">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Retrait
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Limites du plan</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress-item">
+                                <div class="progress-label">
+                                    <span>Tâches quotidiennes</span>
+                                    <span id="daily-progress-text">0/0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="daily-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-item">
+                                <div class="progress-label">
+                                    <span>Tâches mensuelles</span>
+                                    <span id="monthly-progress-text">0/0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="monthly-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet -->
+                <div id="page-wallet" class="page-content hidden">
+                    <div class="card wallet-card">
+                        <div class="card-body">
+                            <div class="wallet-balance">
+                                <p>Solde disponible</p>
+                                <h2 id="wallet-balance-display">—</h2>
+                                <p>Minimum de retrait: <span id="wallet-min-withdrawal">—</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Demander un retrait</h3>
+                        </div>
+                        <div class="card-body">
                             <div class="form-group">
-                                <label for="login-password" class="form-label">Mot de passe</label>
-                                <div class="form-input-icon">
-                                    <input type="password" id="login-password" class="form-input" placeholder="Entrez votre mot de passe" required>
-                                    <button type="button" class="form-input-icon__toggle" onclick="togglePassword('login-password', this)" aria-label="Afficher le mot de passe">
-                                        <i class="fas fa-eye"></i>
+                                <label>Méthode de paiement</label>
+                                <div class="payment-methods">
+                                    <button class="payment-method-btn" data-method="moncash">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span>MonCash</span>
+                                    </button>
+                                    <button class="payment-method-btn" data-method="natcash">
+                                        <i class="fas fa-mobile-screen"></i>
+                                        <span>NatCash</span>
+                                    </button>
+                                    <button class="payment-method-btn" data-method="bank">
+                                        <i class="fas fa-university"></i>
+                                        <span>Banque</span>
+                                    </button>
+                                    <button class="payment-method-btn" data-method="paypal">
+                                        <i class="fab fa-paypal"></i>
+                                        <span>PayPal</span>
                                     </button>
                                 </div>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                            <div id="method-details" class="hidden">
+                                <!-- Method-specific fields will be injected here -->
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Montant (HTG)</label>
+                                <input type="number" id="withdrawal-amount" class="form-input" placeholder="0" step="0.01">
+                                <div class="quick-amounts">
+                                    <button class="btn btn-outline btn-sm" data-amount="min">Min</button>
+                                    <button class="btn btn-outline btn-sm" data-amount="50">50%</button>
+                                    <button class="btn btn-outline btn-sm" data-amount="max">Max</button>
+                                </div>
+                            </div>
+                            
+                            <div id="withdrawal-summary" class="withdrawal-summary hidden">
+                                <!-- Summary will be injected here -->
+                            </div>
+                            
+                            <button class="btn btn-primary btn-block btn-lg" id="request-withdrawal-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Demander le retrait
                             </button>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- PAGE 2: ADMIN DASHBOARD -->
-                <section id="page-admin-dashboard" class="page hidden">
-                    <div class="page__inner" id="admin-main-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du tableau de bord administrateur…</p>
                         </div>
                     </div>
-                </section>
-
-                <!-- PAGE 3: USERS MANAGEMENT -->
-                <section id="page-users-management" class="page hidden">
-                    <div class="page__inner" id="users-management-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement de la gestion des utilisateurs…</p>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Mes retraits</h3>
+                            <button class="btn btn-outline btn-sm" id="refresh-withdrawals-btn">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="my-withdrawals-list" class="withdrawals-list">
+                                <!-- Withdrawals will be injected here -->
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 4: TEAMS MANAGEMENT -->
-                <section id="page-teams-management" class="page hidden">
-                    <div class="page__inner" id="teams-management-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement de la gestion des équipes…</p>
+                <!-- Profile -->
+                <div id="page-profile" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="profile-header">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 id="profile-name">—</h2>
+                                    <p id="profile-email">—</p>
+                                    <div class="profile-badges">
+                                        <span class="badge badge-primary" id="profile-role">—</span>
+                                        <span class="badge badge-warning hidden" id="profile-premium">
+                                            <i class="fas fa-crown"></i>
+                                            Premium
+                                        </span>
+                                        <span class="badge" id="profile-badge">—</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
-
-                <!-- PAGE 5: TASKS MANAGEMENT -->
-                <section id="page-tasks-management" class="page hidden">
-                    <div class="page__inner" id="tasks-management-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement de la gestion des tâches…</p>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Informations personnelles</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Nom complet</label>
+                                <input type="text" id="profile-fullname" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Nom d'utilisateur</label>
+                                <input type="text" id="profile-username" class="form-input" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="profile-email-input" class="form-input" readonly>
+                            </div>
+                            <button class="btn btn-primary" id="save-profile-btn">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
                         </div>
                     </div>
-                </section>
-
-                <!-- PAGE 6: VALIDATION -->
-                <section id="page-validation" class="page hidden">
-                    <div class="page__inner" id="validation-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des validations…</p>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Statistiques</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="profile-tasks">—</span>
+                                    <span class="stat-label">Tâches</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="profile-earned">—</span>
+                                    <span class="stat-label">Gagné</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="profile-badge-name">—</span>
+                                    <span class="stat-label">Badge</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 7: PAYMENTS -->
-                <section id="page-payments" class="page hidden">
-                    <div class="page__inner" id="payments-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des paiements…</p>
+                <!-- Premium -->
+                <div id="page-premium" class="page-content hidden">
+                    <div class="premium-header">
+                        <h2>
+                            <i class="fas fa-crown"></i>
+                            Abonnement Premium
+                        </h2>
+                        <p>Débloquez toutes les fonctionnalités</p>
+                    </div>
+                    
+                    <div id="premium-content" class="premium-content">
+                        <!-- Premium content will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Leaderboard -->
+                <div id="page-leaderboard" class="page-content hidden">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-period="day">Aujourd'hui</button>
+                        <button class="tab-btn" data-period="week">Cette semaine</button>
+                        <button class="tab-btn" data-period="month">Ce mois</button>
+                        <button class="tab-btn" data-period="all">Total</button>
+                    </div>
+                    
+                    <div id="leaderboard-podium" class="leaderboard-podium">
+                        <!-- Podium will be injected here -->
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Classement complet</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="leaderboard-list" class="leaderboard-list">
+                                <!-- Leaderboard will be injected here -->
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 8: SETTINGS -->
-                <section id="page-settings" class="page hidden">
-                    <div class="page__inner" id="settings-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des paramètres…</p>
+                <!-- Offerwall Pages -->
+                <div id="page-offerwall-monlix" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Offres Monlix</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state">
+                                <i class="fas fa-gift"></i>
+                                <h3>Offres Monlix</h3>
+                                <p>Les offres seront chargées depuis l'API Monlix</p>
+                                <button class="btn btn-primary" id="load-monlix-offers-btn">
+                                    <i class="fas fa-sync"></i>
+                                    Charger les offres (démo)
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 9: MANAGER DASHBOARD -->
-                <section id="page-manager-dashboard" class="page hidden">
-                    <div class="page__inner" id="manager-dashboard-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du tableau de bord manager…</p>
+                <div id="page-offerwall-adscend" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Offres Adscend</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state">
+                                <i class="fas fa-gift"></i>
+                                <h3>Offres Adscend</h3>
+                                <p>Les offres seront chargées depuis l'API Adscend</p>
+                                <button class="btn btn-primary" id="load-adscend-offers-btn">
+                                    <i class="fas fa-sync"></i>
+                                    Charger les offres (démo)
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 10: WORKER DASHBOARD -->
-                <section id="page-worker-dashboard" class="page hidden">
-                    <div class="page__inner" id="worker-dashboard-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du tableau de bord worker…</p>
+                <div id="page-offerwall-ayetstudios" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Offres AyetStudios</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state">
+                                <i class="fas fa-gift"></i>
+                                <h3>Offres AyetStudios</h3>
+                                <p>Les offres seront chargées depuis l'API AyetStudios</p>
+                                <button class="btn btn-primary" id="load-ayet-offers-btn">
+                                    <i class="fas fa-sync"></i>
+                                    Charger les offres (démo)
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 11: OFFERWALL MONLIX -->
-                <section id="page-offerwall-monlix" class="page hidden">
-                    <div class="page__inner" id="offerwall-monlix-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des offres Monlix…</p>
+                <div id="page-offerwall-lootably" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Offres Lootably</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state">
+                                <i class="fas fa-gift"></i>
+                                <h3>Offres Lootably</h3>
+                                <p>Les offres seront chargées depuis l'API Lootably</p>
+                                <button class="btn btn-primary" id="load-lootably-offers-btn">
+                                    <i class="fas fa-sync"></i>
+                                    Charger les offres (démo)
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- PAGE 12: OFFERWALL ADSCEND -->
-                <section id="page-offerwall-adscend" class="page hidden">
-                    <div class="page__inner" id="offerwall-adscend-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des offres Adscend…</p>
+                <div id="page-agency-tasks" class="page-content hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Tâches Agency</h3>
+                            <span class="badge badge-warning">
+                                <i class="fas fa-crown"></i>
+                                Premium
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div id="agency-tasks-list" class="tasks-list">
+                                <!-- Agency tasks will be injected here -->
+                            </div>
                         </div>
                     </div>
-                </section>
-
-                <!-- PAGE 13: OFFERWALL AYETSTUDIOS -->
-                <section id="page-offerwall-ayetstudios" class="page hidden">
-                    <div class="page__inner" id="offerwall-ayetstudios-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des offres AyetStudios…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 14: OFFERWALL LOOTABLY -->
-                <section id="page-offerwall-lootably" class="page hidden">
-                    <div class="page__inner" id="offerwall-lootably-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des offres Lootably…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 15: AGENCY TASKS -->
-                <section id="page-agency-tasks" class="page hidden">
-                    <div class="page__inner" id="agency-tasks-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des tâches agency…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 16: WALLET -->
-                <section id="page-wallet" class="page hidden">
-                    <div class="page__inner" id="wallet-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du portefeuille…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 17: PROFILE -->
-                <section id="page-profile" class="page hidden">
-                    <div class="page__inner" id="profile-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du profil…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 18: PREMIUM -->
-                <section id="page-premium" class="page hidden">
-                    <div class="page__inner" id="premium-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement des offres premium…</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PAGE 19: LEADERBOARD -->
-                <section id="page-leaderboard" class="page hidden">
-                    <div class="page__inner" id="leaderboard-content">
-                        <div class="page__loading">
-                            <div class="spinner"></div>
-                            <p>Chargement du classement…</p>
-                        </div>
-                    </div>
-                </section>
-
+                </div>
             </div>
         </main>
 
         <!-- Bottom Bar (Mobile) -->
-        <nav class="bottom-bar hidden" id="bottom-bar">
-            <div class="bottom-bar__inner" id="bottom-bar-inner">
-                <!-- Bottom bar items injected by JS -->
-            </div>
+        <nav id="bottom-bar" class="bottom-bar hidden">
+            <a href="#" class="bottom-bar-item" data-page="page-worker-dashboard">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="#" class="bottom-bar-item" data-page="page-wallet">
+                <i class="fas fa-wallet"></i>
+                <span>Wallet</span>
+            </a>
+            <a href="#" class="bottom-bar-item" data-page="page-leaderboard">
+                <i class="fas fa-trophy"></i>
+                <span>Top</span>
+            </a>
+            <a href="#" class="bottom-bar-item" data-page="page-profile">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+            </a>
         </nav>
-        
     </div>
 
     <!-- Upload Progress Overlay -->
-    <div id="hbw-upload-overlay" class="hbw-upload-overlay hidden">
-        <div class="hbw-upload-modal">
-            <div class="hbw-upload-modal__header">
-                <h4 class="hbw-upload-modal__title">Envoi en cours…</h4>
-                <span class="hbw-upload-modal__percent" id="hbw-progress-percent">0%</span>
+    <div id="upload-overlay" class="upload-overlay hidden">
+        <div class="upload-modal">
+            <div class="upload-header">
+                <h4>Envoi en cours…</h4>
+                <span id="upload-percent">0%</span>
             </div>
-            <div class="hbw-upload-modal__body">
-                <div class="hbw-upload-modal__status" id="hbw-progress-status">Préparation du fichier…</div>
-                <div class="hbw-upload-modal__progress-track">
-                    <div class="hbw-upload-modal__progress-fill" id="hbw-progress-bar-inner" style="width: 0%;"></div>
+            <div class="upload-body">
+                <div id="upload-status" class="upload-status">Préparation du fichier…</div>
+                <div class="progress-bar">
+                    <div id="upload-progress-bar" class="progress-fill" style="width: 0%"></div>
                 </div>
             </div>
-            <div class="hbw-upload-modal__footer">
-                <button class="btn btn-sm btn-outline" onclick="cancelUpload()">Annuler</button>
+            <div class="upload-footer">
+                <button class="btn btn-outline btn-sm" id="cancel-upload-btn">Annuler</button>
             </div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- GLOBAL MODALS                                                -->
-    <!-- ============================================================ -->
-
+    <!-- Modals -->
     <!-- Confirm Modal -->
-    <div id="modal-confirm" class="modal-backdrop hidden" data-modal="modal-confirm">
-        <div class="modal-box modal-box--sm">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title" id="confirm-title">Confirmation</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-confirm" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-sm">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirmation</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body">
-                <div class="confirm__icon" id="confirm-icon">
-                    <i class="fas fa-exclamation-triangle text-yellow-600 text-3xl"></i>
+            <div class="modal-body">
+                <div class="confirm-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <p class="confirm__message" id="confirm-message">Êtes-vous sûr ?</p>
+                <p id="confirm-message">Êtes-vous sûr ?</p>
             </div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-danger" id="confirm-action-btn">Confirmer</button>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="confirm-cancel">Annuler</button>
+                <button class="btn btn-danger" id="confirm-action">Confirmer</button>
             </div>
         </div>
     </div>
 
     <!-- User Detail Modal -->
-    <div id="modal-user-detail" class="modal-backdrop hidden" data-modal="modal-user-detail">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Détail utilisateur</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-user-detail" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Détail utilisateur</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-user-detail-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
+            <div class="modal-body" id="user-detail-body">
+                <!-- User details will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Adjust Balance Modal -->
-    <div id="modal-adjust-balance" class="modal-backdrop hidden" data-modal="modal-adjust-balance">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Ajuster le solde</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-adjust-balance" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Ajuster le solde</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-adjust-balance-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-confirm-adjust">Confirmer</button>
+            <div class="modal-body" id="adjust-balance-body">
+                <!-- Adjust balance form will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="confirm-adjust-btn">Confirmer</button>
             </div>
         </div>
     </div>
 
-    <!-- Create/Edit Team Modal -->
-    <div id="modal-create-team" class="modal-backdrop hidden" data-modal="modal-create-team">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title" id="modal-create-team-title">Créer une équipe</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <!-- Create Team Modal -->
+    <div id="modal-create-team" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="create-team-title">Créer une équipe</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-create-team-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-save-team">Enregistrer</button>
+            <div class="modal-body" id="create-team-body">
+                <!-- Create team form will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="save-team-btn">Enregistrer</button>
             </div>
         </div>
     </div>
 
     <!-- Create Task Modal -->
-    <div id="modal-create-task" class="modal-backdrop hidden" data-modal="modal-create-task">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Créer une tâche</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-create-task" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Créer une tâche</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-create-task-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-create-task">Créer la tâche</button>
+            <div class="modal-body" id="create-task-body">
+                <!-- Create task form will be injected here -->
             </div>
-        </div>
-    </div>
-
-    <!-- Add Maintenance Modal -->
-    <div id="modal-add-maintenance" class="modal-backdrop hidden" data-modal="modal-add-maintenance">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Ajouter une maintenance</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-box__body" id="modal-add-maintenance-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-save-maintenance">Enregistrer</button>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="save-task-btn">Créer la tâche</button>
             </div>
         </div>
     </div>
 
     <!-- Task Proof Modal -->
-    <div id="modal-task-proof" class="modal-backdrop hidden" data-modal="modal-task-proof">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Soumettre une preuve</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-task-proof" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Soumettre une preuve</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-task-proof-body">
-                <div class="border-dashed dropzone" id="proof-dropzone">
-                    <div class="dropzone__inner">
-                        <i class="fas fa-cloud-upload-alt dropzone__icon"></i>
-                        <p class="dropzone__text">Glissez-déposez votre preuve ici</p>
-                        <p class="dropzone__hint">ou cliquez pour sélectionner un fichier</p>
-                        <input type="file" id="proof-file-input" class="dropzone__input" accept="image/*,.pdf,.doc,.docx" style="display: none;">
+            <div class="modal-body">
+                <div class="dropzone" id="proof-dropzone">
+                    <div class="dropzone-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Glissez-déposez votre preuve ici</p>
+                        <p class="dropzone-hint">ou cliquez pour sélectionner un fichier</p>
                     </div>
-                    <div class="dropzone__preview" id="proof-preview" style="display: none;"></div>
+                    <input type="file" id="proof-file-input" class="dropzone-input" accept="image/*,.pdf,.doc,.docx">
+                    <div id="proof-preview" class="dropzone-preview hidden"></div>
                 </div>
-                <div class="form-group mt-4">
-                    <label class="form-label">Commentaire (optionnel)</label>
-                    <textarea id="proof-comment" class="form-input form-textarea" rows="3" placeholder="Ajoutez un commentaire…"></textarea>
+                
+                <div class="form-group">
+                    <label>Commentaire (optionnel)</label>
+                    <textarea id="proof-comment" class="form-textarea" rows="3" placeholder="Ajoutez un commentaire…"></textarea>
                 </div>
             </div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-submit-proof">
-                    <i class="fas fa-paper-plane"></i> Soumettre
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="submit-proof-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Soumettre
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Proof Success Modal -->
-    <div id="modal-proof-success" class="modal-backdrop hidden" data-modal="modal-proof-success">
-        <div class="modal-box modal-box--sm">
-            <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon">
-                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+    <!-- Success Modals -->
+    <div id="modal-proof-success" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-sm">
+            <div class="modal-body text-center">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mt-4">Preuve soumise !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre preuve a été envoyée avec succès. Elle sera examinée par un administrateur.</p>
+                <h3>Preuve soumise !</h3>
+                <p>Votre preuve a été envoyée avec succès. Elle sera examinée par un administrateur.</p>
             </div>
-            <div class="modal-box__footer justify-center">
-                <button class="btn btn-primary" data-close-modal>Parfait !</button>
+            <div class="modal-footer justify-center">
+                <button class="btn btn-primary modal-close-btn">Parfait !</button>
             </div>
         </div>
     </div>
 
-    <!-- Maintenance Proof Modal -->
-    <div id="modal-maintenance-proof" class="modal-backdrop hidden" data-modal="modal-maintenance-proof">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Preuve de maintenance</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-box__body" id="modal-maintenance-proof-body">
-                <div class="border-dashed dropzone" id="maintenance-dropzone">
-                    <div class="dropzone__inner">
-                        <i class="fas fa-cloud-upload-alt dropzone__icon"></i>
-                        <p class="dropzone__text">Glissez-déposez votre capture d'écran ici</p>
-                        <input type="file" id="maintenance-file-input" class="dropzone__input" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="dropzone__preview" id="maintenance-preview" style="display: none;"></div>
+    <div id="modal-withdrawal-success" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-sm">
+            <div class="modal-body text-center">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
+                <h3>Demande envoyée !</h3>
+                <p>Votre demande de retrait a été soumise. Elle sera traitée dans les plus brefs délais.</p>
             </div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-submit-maintenance">
-                    <i class="fas fa-paper-plane"></i> Soumettre
-                </button>
+            <div class="modal-footer justify-center">
+                <button class="btn btn-primary modal-close-btn">Parfait !</button>
             </div>
         </div>
     </div>
 
-    <!-- Maintenance Success Modal -->
-    <div id="modal-maintenance-success" class="modal-backdrop hidden" data-modal="modal-maintenance-success">
-        <div class="modal-box modal-box--sm">
-            <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon">
-                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+    <div id="modal-premium-submitted" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-sm">
+            <div class="modal-body text-center">
+                <div class="success-icon success-icon-warning">
+                    <i class="fas fa-crown"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mt-4">Maintenance confirmée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre preuve a été envoyée. Le bonus sera crédité après vérification.</p>
+                <h3>Preuve premium envoyée !</h3>
+                <p>Votre demande d'abonnement premium a été soumise. Un administrateur la validera prochainement.</p>
             </div>
-            <div class="modal-box__footer justify-center">
-                <button class="btn btn-primary" data-close-modal>Parfait !</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Withdrawal Success Modal -->
-    <div id="modal-withdrawal-success" class="modal-backdrop hidden" data-modal="modal-withdrawal-success">
-        <div class="modal-box modal-box--sm">
-            <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon">
-                    <i class="fas fa-check-circle text-green-600 text-4xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mt-4">Demande envoyée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre demande de retrait a été soumise. Elle sera traitée dans les plus brefs délais.</p>
-            </div>
-            <div class="modal-box__footer justify-center">
-                <button class="btn btn-primary" data-close-modal>Parfait !</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Submitted Modal -->
-    <div id="modal-premium-submitted" class="modal-backdrop hidden" data-modal="modal-premium-submitted">
-        <div class="modal-box modal-box--sm">
-            <div class="modal-box__body text-center">
-                <div class="modal-box__success-icon">
-                    <i class="fas fa-crown text-yellow-600 text-4xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mt-4">Preuve premium envoyée !</h3>
-                <p class="text-sm text-gray-500 mt-2">Votre demande d'abonnement premium a été soumise. Un administrateur la validera prochainement.</p>
-            </div>
-            <div class="modal-box__footer justify-center">
-                <button class="btn btn-primary" data-close-modal>Compris !</button>
+            <div class="modal-footer justify-center">
+                <button class="btn btn-primary modal-close-btn">Compris !</button>
             </div>
         </div>
     </div>
 
     <!-- Plan Limits Modal -->
-    <div id="modal-plan-limits" class="modal-backdrop hidden" data-modal="modal-plan-limits">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Limites de votre plan</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-plan-limits" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Limites de votre plan</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-plan-limits-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
-                <button class="btn btn-primary" onclick="navigateTo('page-premium')">
-                    Passer au Premium
-                </button>
+            <div class="modal-body" id="plan-limits-body">
+                <!-- Plan limits will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
+                <button class="btn btn-primary" data-page="page-premium">Passer au Premium</button>
             </div>
         </div>
     </div>
 
-    <!-- Worker Notifications Modal -->
-    <div id="modal-notifications" class="modal-backdrop hidden" data-modal="modal-notifications">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Mes notifications</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <!-- Notifications Modal -->
+    <div id="modal-notifications" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Mes notifications</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-notifications-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-primary" data-close-modal>Fermer</button>
+            <div class="modal-body" id="notifications-body">
+                <!-- Notifications will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Member Actions Modal -->
-    <div id="modal-member-actions" class="modal-backdrop hidden" data-modal="modal-member-actions">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Actions sur le membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-member-actions" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Actions sur le membre</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-member-actions-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
+            <div class="modal-body" id="member-actions-body">
+                <!-- Member actions will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Member Detail Modal -->
-    <div id="modal-member-detail" class="modal-backdrop hidden" data-modal="modal-member-detail">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Détail du membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-member-detail" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Détail du membre</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-member-detail-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
+            <div class="modal-body" id="member-detail-body">
+                <!-- Member details will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Member Credentials Modal -->
-    <div id="modal-member-credentials" class="modal-backdrop hidden" data-modal="modal-member-credentials">
-        <div class="modal-box">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Identifiants du membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-member-credentials" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Identifiants du membre</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-member-credentials-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
-                <button class="btn btn-primary" id="btn-copy-credentials">
-                    <i class="fas fa-copy"></i> Copier
+            <div class="modal-body" id="member-credentials-body">
+                <!-- Credentials will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
+                <button class="btn btn-primary" id="copy-credentials-btn">
+                    <i class="fas fa-copy"></i>
+                    Copier
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Add Member Modal -->
-    <div id="modal-add-member" class="modal-backdrop hidden" data-modal="modal-add-member">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Ajouter un membre</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-add-member" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Ajouter un membre</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-add-member-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-create-worker">
-                    <i class="fas fa-user-plus"></i> Créer le compte
+            <div class="modal-body" id="add-member-body">
+                <!-- Add member form will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="create-worker-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Créer le compte
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Manager Messages Modal -->
-    <div id="modal-manager-messages" class="modal-backdrop hidden" data-modal="modal-manager-messages">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Messages de l'équipe</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-manager-messages" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Messages de l'équipe</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-manager-messages-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Fermer</button>
+            <div class="modal-body" id="manager-messages-body">
+                <!-- Messages will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Manager Withdrawal Modal -->
-    <div id="modal-manager-withdrawal" class="modal-backdrop hidden" data-modal="modal-manager-withdrawal">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Demande de retrait</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-manager-withdrawal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Demande de retrait</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-manager-withdrawal-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-request-manager-withdrawal">
-                    <i class="fas fa-paper-plane"></i> Demander le retrait
+            <div class="modal-body" id="manager-withdrawal-body">
+                <!-- Withdrawal form will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="request-manager-withdrawal-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Demander le retrait
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Create Manager Modal -->
-    <div id="modal-create-manager" class="modal-backdrop hidden" data-modal="modal-create-manager">
-        <div class="modal-box modal-box--lg">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Créer un compte Manager</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-create-manager" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>Créer un compte Manager</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body" id="modal-create-manager-body"></div>
-            <div class="modal-box__footer">
-                <button class="btn btn-outline" data-close-modal>Annuler</button>
-                <button class="btn btn-primary" id="btn-confirm-create-manager">
-                    <i class="fas fa-user-plus"></i> Créer le compte
+            <div class="modal-body" id="create-manager-body">
+                <!-- Create manager form will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Annuler</button>
+                <button class="btn btn-primary" id="confirm-create-manager-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Créer le compte
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Image Viewer Modal -->
-    <div id="modal-image-viewer" class="modal-backdrop hidden" data-modal="modal-image-viewer">
-        <div class="modal-box modal-box--fullscreen">
-            <div class="modal-box__header">
-                <h3 class="modal-box__title">Aperçu de l'image</h3>
-                <button class="modal-box__close" data-close-modal aria-label="Fermer">
+    <div id="modal-image-viewer" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-fullscreen">
+            <div class="modal-header">
+                <h3>Aperçu de l'image</h3>
+                <button class="modal-close" aria-label="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-box__body text-center" id="image-viewer-body">
-                <img id="image-viewer-src" src="" alt="Aperçu" class="image-viewer__img">
+            <div class="modal-body text-center">
+                <img id="image-viewer-src" src="" alt="Aperçu" class="image-viewer-img">
             </div>
         </div>
     </div>
 
     <!-- Application Script -->
     <script src="app.js"></script>
-    
 </body>
-                                </html>
+    </html>
